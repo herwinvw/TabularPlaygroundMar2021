@@ -3,8 +3,9 @@ from pandas.api.types import CategoricalDtype
 import pandas as pd
 
 class CategoricalTransform(BaseEstimator, TransformerMixin):
-    def __init__(self, cat_cols):
+    def __init__(self, cat_cols, min_data_portion = 0):
         self.cat_cols = cat_cols
+        self.min_data_portion = min_data_portion
         
     def _transform_column(self, col, col_name):
         return col.astype(self.cat_type[col_name]) 
@@ -18,7 +19,9 @@ class CategoricalTransform(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None, **fit_params):
         self.cat_type = dict()
         for col in self.cat_cols:
-            self.cat_type[col] = CategoricalDtype(X[col].unique())
+            category_count = X.groupby(col).size().reset_index(name='count')
+            filtered_category_count = category_count[category_count['count']>self.min_data_portion*len(X)]
+            self.cat_type[col] = CategoricalDtype(filtered_category_count[col])
         return self
     
 
