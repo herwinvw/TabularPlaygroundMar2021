@@ -1,7 +1,7 @@
-from sklearn.base import BaseEstimator, TransformerMixin
-from pandas.api.types import CategoricalDtype
-import pandas as pd
-from typing import List
+from sklearn.base import BaseEstimator, TransformerMixin # type: ignore
+from pandas.api.types import CategoricalDtype # type: ignore
+import pandas as pd # type: ignore
+from typing import List, Any
 
 class CategoricalTransform(BaseEstimator, TransformerMixin):
     """
@@ -19,10 +19,10 @@ class CategoricalTransform(BaseEstimator, TransformerMixin):
         self.cat_cols = cat_cols
         self.min_data_portion = min_data_portion
         
-    def _transform_column(self, col, col_name):
+    def _transform_column(self, col:pd.Series, col_name:str)->pd.Series:
         return col.astype(self.cat_type[col_name]) 
         
-    def transform(self, df:pd.DataFrame, **transform_params)->pd.DataFrame:
+    def transform(self, df:pd.DataFrame, **transform_params:Any)->pd.DataFrame:
         """
         Transforms df[cat_cols] into the CategoricalDtypes learned from training.
         Categories not seen in training, or with fewer than min_data_portion rows in training are encoded as None.
@@ -39,7 +39,7 @@ class CategoricalTransform(BaseEstimator, TransformerMixin):
             df_cat[col] = self._transform_column(df_cat[col], col)
         return df_cat
         
-    def fit(self, X:pd.DataFrame, y=None, **fit_params):
+    def fit(self, X:pd.DataFrame, y:Any=None, **fit_params:Any)->CategoricalTransform:
         """
         Learns the CategoricalDtype for each categorical feature
         
@@ -63,8 +63,8 @@ class IntegerCategoricalTransform(CategoricalTransform):
     The categories used are to be fitted from training data. At transform, 
     unknown categories and categories that contain less than min_data_portion rows in the fit
     are transformed to -1.
-    """"
-    def _transform_column(self, col, col_name):
+    """
+    def _transform_column(self, col:pd.Series, col_name:str)->pd.Series:
         return super()._transform_column(col, col_name).values.codes
 
 class NonNegativeIntegerCategoricalTransform(CategoricalTransform):
@@ -74,9 +74,9 @@ class NonNegativeIntegerCategoricalTransform(CategoricalTransform):
     The categories used are to be fitted from training data. At transform, 
     unknown categories and categories that contain less than min_data_portion rows in the fit
     are transformed to 0.
-    """"
+    """
     
-    def _transform_column(self, col, col_name):
+    def _transform_column(self, col:pd.Series, col_name:str)->pd.Series:
         return super()._transform_column(col, col_name).values.codes+1
     
 class OneHotTransform(BaseEstimator, TransformerMixin):
@@ -84,7 +84,7 @@ class OneHotTransform(BaseEstimator, TransformerMixin):
     One hot encode all columns with type CategoricalDtype, leaving the other columns as is.
     """
     
-    def transform(self, df:pd.DataFrame, **transform_params)->pd.DataFrame:
+    def transform(self, df:pd.DataFrame, **transform_params:Any)->pd.DataFrame:
         """
         One hot encode all columns with type CategoricalDtype, leaving the other columns as is.
     
@@ -96,7 +96,7 @@ class OneHotTransform(BaseEstimator, TransformerMixin):
         """
         return pd.get_dummies(df)
     
-    def fit(self, X:pd.DataFrame, y=None, **fit_params):
+    def fit(self, X:pd.DataFrame, y:Any=None, **fit_params:Any)->OneHotTransform:
         """
         Not used
         """    
