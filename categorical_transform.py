@@ -39,7 +39,7 @@ class CategoricalTransform(BaseEstimator, TransformerMixin):
             df_cat[col] = self._transform_column(df_cat[col], col)
         return df_cat
         
-    def fit(self, X:pd.DataFrame, y:Any=None, **fit_params:Any)->CategoricalTransform:
+    def fit(self, X:pd.DataFrame, y:Any=None, **fit_params:Any):
         """
         Learns the CategoricalDtype for each categorical feature
         
@@ -96,7 +96,7 @@ class OneHotTransform(BaseEstimator, TransformerMixin):
         """
         return pd.get_dummies(df)
     
-    def fit(self, X:pd.DataFrame, y:Any=None, **fit_params:Any)->OneHotTransform:
+    def fit(self, X:pd.DataFrame, y:Any=None, **fit_params:Any):
         """
         Not used
         """    
